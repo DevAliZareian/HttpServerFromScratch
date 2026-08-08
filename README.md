@@ -14,16 +14,16 @@ A simple HTTP server written in C# (.NET) from scratch using raw TCP sockets.
 
 ```bash
 dotnet build
-dotnet run -- --port 8080
+dotnet run --port 3000
 ```
 
 Optional secret key:
 
 ```bash
-dotnet run -- --port 8080 --secret-key my-secret
+dotnet run --secret-key my-secret --port 3000
 ```
 
-Then open `http://localhost:8080`.
+Then open `http://localhost:3000`.
 
 ## Project Structure
 
