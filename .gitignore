@@ -9,9 +9,6 @@
 bin/
 obj/
 
-## Protocol folder (not pushed)
-Protocol/
-
 ## OS
 Thumbs.db
 Desktop.ini
