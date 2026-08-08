@@ -1,4 +1,5 @@
-﻿using HttpServer.Core;
+﻿using HttpServer.Configuration;
+using HttpServer.Core;
 
 namespace HttpServer
 {
@@ -8,6 +9,11 @@ namespace HttpServer
         {
             for (int i = 0; i < args.Length; i++)
             {
+                if (args[i] == "--secret-key" && i + 1 < args.Length)
+                {
+                    ServerConfiguration.SecretKey = args[i + 1];
+                }
+
                 if (args[i] == "--port" && i + 1 < args.Length)
                 {
                     if (int.TryParse(args[i + 1], out int port))

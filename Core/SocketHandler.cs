@@ -1,11 +1,13 @@
-﻿using HttpServer.Protocol;
+﻿using HttpServer.Handlers;
+using HttpServer.Interfaces;
+using HttpServer.Protocol;
 using HttpServer.Utils;
 using System.Net;
 using System.Net.Sockets;
 
 namespace HttpServer.Core
 {
-    public class SocketHandler
+    public class SocketHandler : ISocketHandler
     {
         private readonly Socket _listenerSocket;
         private readonly int _port;
@@ -29,8 +31,21 @@ namespace HttpServer.Core
 
             while (_isRunning)
             {
-                Socket client = _listenerSocket.Accept();
-                HandleClient(client);
+                try
+                {
+                    Socket client = _listenerSocket.Accept();
+                    Logger.Debug($"Client connected: {client.RemoteEndPoint}");
+
+                    HandleClient(client);
+                }
+                catch (SocketException ex)
+                {
+
+                    if (_isRunning)
+                    {
+                        Logger.Error($"Socket accept error: {ex.Message}");
+                    }
+                }
             }
         }
 
@@ -50,20 +65,7 @@ namespace HttpServer.Core
                 int receivedBytes = client.Receive(buffer);
                 string request = System.Text.Encoding.UTF8.GetString(buffer, 0, receivedBytes);
 
-                HttpRequest parsedRequest = HttpParser.Parse(request);
-
-                if (parsedRequest.Method is "GET")
-                {
-                    var response = new HttpResponse(HttpStatusCodes.OK, "Dorood bar Amoo byco", ContentTypes.TextPlain);
-                    byte[] responseBytes = response.ToBytes();
-                    client.Send(responseBytes);
-                }
-                else
-                {
-                    var response = new HttpResponse(HttpStatusCodes.BadRequest, "Boro Soorat", ContentTypes.TextPlain);
-                    byte[] responseBytes = response.ToBytes();
-                    client.Send(responseBytes);
-                }
+                RequestHandler.Handle(HttpParser.Parse(request), client);
             }
             catch (Exception ex)
             {
