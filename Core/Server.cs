@@ -15,7 +15,7 @@ namespace HttpServer.Core
             }
 			catch (Exception)
 			{
-
+                // TODO: Handle the Whole Sever Errors.
 				throw;
 			}
         }

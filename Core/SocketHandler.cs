@@ -1,7 +1,7 @@
-﻿using System.Net.Sockets;
-using System.Net;
+﻿using HttpServer.Protocol;
 using HttpServer.Utils;
-using System.Linq.Expressions;
+using System.Net;
+using System.Net.Sockets;
 
 namespace HttpServer.Core
 {
@@ -50,18 +50,18 @@ namespace HttpServer.Core
                 int receivedBytes = client.Receive(buffer);
                 string request = System.Text.Encoding.UTF8.GetString(buffer, 0, receivedBytes);
 
-                Console.WriteLine(request);
+                HttpRequest parsedRequest = HttpParser.Parse(request);
 
-                if (request.StartsWith("GET"))
+                if (parsedRequest.Method is "GET")
                 {
-                    string response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\nAmooByco Eshgh!";
-                    byte[] responseBytes = System.Text.Encoding.UTF8.GetBytes(response);
+                    var response = new HttpResponse(HttpStatusCodes.OK, "Dorood bar Amoo byco", ContentTypes.TextPlain);
+                    byte[] responseBytes = response.ToBytes();
                     client.Send(responseBytes);
                 }
                 else
                 {
-                    string response = "HTTP/1.1 400 Bad Request\r\nContent-Type: text/plain\r\n\r\nBad Request";
-                    byte[] responseBytes = System.Text.Encoding.UTF8.GetBytes(response);
+                    var response = new HttpResponse(HttpStatusCodes.BadRequest, "Boro Soorat", ContentTypes.TextPlain);
+                    byte[] responseBytes = response.ToBytes();
                     client.Send(responseBytes);
                 }
             }
